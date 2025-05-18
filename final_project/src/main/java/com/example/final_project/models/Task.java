@@ -1,22 +1,36 @@
 package com.example.final_project.models;
-
+import jakarta.persistence.*;
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "tasks")
 public class Task {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String title;
+
+    @Column(name = "user_id", nullable = false)
     private Long userId;
+
+    @Column(name = "creation_date", nullable = false)
     private LocalDate creationDate;
+
+    @Column(name = "target_date")
     private LocalDate targetDate;
-    private boolean completed;
-    private boolean deleted;
 
-    public Long getId() {
-        return id;
-    }
+    @Column(nullable = false)
+    private boolean completed = false;
 
-    public void setId(Long id) {
-        this.id = id;
+    @Column(nullable = false)
+    private boolean deleted = false;
+
+    // PrePersist hook to set creation date automatically
+    @PrePersist
+    protected void onCreate() {
+        creationDate = LocalDate.now();
     }
 
     public String getTitle() {
@@ -66,6 +80,7 @@ public class Task {
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
+
 
     @Override
     public String toString() {
