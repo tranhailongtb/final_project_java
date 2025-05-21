@@ -1,35 +1,20 @@
 package com.example.final_project.repository;
 
 import com.example.final_project.models.Notification;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public class NotificationRepository {
-    private final ConcurrentHashMap<Long, Notification> notifications = new ConcurrentHashMap<>();
-    private final AtomicLong idCounter = new AtomicLong(1);
+public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    public List<Notification> findByUserId(Long userId) {
-        return notifications.values().stream()
-                .filter(notification -> notification.getUserId().equals(userId))
-                .collect(Collectors.toList());
-    }
+    List<Notification> findByUserId(Long userId);
 
-    public List<Notification> findUnreadByUserId(Long userId) {
-        return notifications.values().stream()
-                .filter(notification -> notification.getUserId().equals(userId)
-                        && !notification.isRead())
-                .collect(Collectors.toList());
-    }
+    List<Notification> findByUserIdAndReadFalse(Long userId);
 
-    public Notification save(Notification notification) {
-        if (notification.getId() == null) {
-            notification.setId(idCounter.getAndIncrement());
-        }
-        notifications.put(notification.getId(), notification);
-        return notification;
-    }
+    @Transactional
+    @Modifying
+    @Query("UPDATE Notification n SET n.read = true WHERE n.id = ?1")
+    void markAsRead(Long id);
 }

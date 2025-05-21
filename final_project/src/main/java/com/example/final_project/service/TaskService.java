@@ -14,15 +14,15 @@ public class TaskService {
     }
 
     public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+        return taskRepository.findByDeletedFalse();
     }
 
     public List<Task> getUserTasks(Long userId) {
-        return taskRepository.findByUserId(userId);
+        return taskRepository.findByUserIdAndDeletedFalse(userId);
     }
 
     public List<Task> getPendingUserTasks(Long userId) {
-        return taskRepository.findPendingByUserId(userId);
+        return taskRepository.findByUserIdAndCompletedFalseAndDeletedFalse(userId);
     }
 
     public Task createTask(Task task) {

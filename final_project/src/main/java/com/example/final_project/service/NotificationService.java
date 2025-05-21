@@ -18,10 +18,14 @@ public class NotificationService {
     }
 
     public List<Notification> getUnreadUserNotifications(Long userId) {
-        return notificationRepository.findUnreadByUserId(userId);
+        return notificationRepository.findByUserIdAndReadFalse(userId);
     }
 
     public Notification createNotification(Notification notification) {
         return notificationRepository.save(notification);
+    }
+
+    public void markAsRead(Long id) {
+        notificationRepository.markAsRead(id);
     }
 }
