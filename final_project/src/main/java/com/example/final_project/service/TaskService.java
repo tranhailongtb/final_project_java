@@ -7,8 +7,15 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class TaskService {
@@ -43,4 +50,19 @@ public class TaskService {
     public void deleteTask(Long id) {
         taskRepository.markAsDeleted(id);
     }
+
+    @Scheduled(fixedRate = 1, timeUnit = TimeUnit.SECONDS)
+    public void checkForOverdueTasks() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Task> activeTask = taskRepository.findByDeletedFalse();
+        System.out.printf("Total active task: %d\n",activeTask.size());
+    }
+
+
+    @Async
+    public CompletableFuture<List<Task>> getCompletedUserTasks(Long userId) {
+        List<Task> retrieval = taskRepository.findByUserIdAndCompletedFalseAndDeletedFalse(userId);
+        return CompletableFuture.completedFuture(retrieval);
+    }
+
 }
