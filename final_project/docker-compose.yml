@@ -1,0 +1,47 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:h2:file:/data/taskdb
+#      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
+#      SPRING_DATASOURCE_USERNAME: sa
+#      SPRING_DATASOURCE_PASSWORD:
+#      SPRING_H2_CONSOLE_ENABLED: "true"
+#      SPRING_H2_CONSOLE_PATH: "/h2-console"
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
+    volumes:
+      - h2-data:/data
+
+#  h2-console:
+#    image: oscarfonts/h2
+#    ports:
+#      - "8081:8081"
+#    volumes:
+#      - h2-data:/opt/h2-data
+#    depends_on:
+#      - app
+  postgres-db:
+    image: postgres:16
+    container_name: app-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: '123456'
+      POSTGRES_DB: app_db
+    ports:
+      - '5434:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  redis:
+    container_name: app-redis
+    image: redis:7.0
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+volumes:
+  h2-data:
+  postgres-data:
+  redis_data:
