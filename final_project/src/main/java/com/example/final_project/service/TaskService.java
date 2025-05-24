@@ -6,15 +6,18 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
+    private final KafkaTemplate<String, Task> kafkaTemplate;
 
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, KafkaTemplate<String, Task> kafkaTemplate) {
         this.taskRepository = taskRepository;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     public List<Task> getAllTasks() {
@@ -32,7 +35,9 @@ public class TaskService {
     }
 
     public Task createTask(Task task) {
-        return taskRepository.save(task);
+        Task savedTask = taskRepository.save(task);
+        kafkaTemplate.send("tasks", savedTask);
+        return savedTask;
     }
 
     public void deleteTask(Long id) {
