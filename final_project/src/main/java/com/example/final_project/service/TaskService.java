@@ -2,6 +2,10 @@ package com.example.final_project.service;
 
 import com.example.final_project.models.Task;
 import com.example.final_project.repository.TaskRepository;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -17,7 +21,9 @@ public class TaskService {
         return taskRepository.findByDeletedFalse();
     }
 
+    @Cacheable(cacheNames = "user_task", key = "#userId")
     public List<Task> getUserTasks(Long userId) {
+        System.out.printf("Cache missed: %s\n", userId);
         return taskRepository.findByUserIdAndDeletedFalse(userId);
     }
 
