@@ -1,8 +1,16 @@
 package com.example.final_project.models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
 import java.time.LocalDate;
 
+@Entity
 public class Task {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String title;
     private Long userId;
@@ -10,6 +18,9 @@ public class Task {
     private LocalDate targetDate;
     private boolean completed;
     private boolean deleted;
+
+    public Task() {
+    }
 
     public Long getId() {
         return id;
