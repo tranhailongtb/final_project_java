@@ -2,11 +2,13 @@ package com.example.final_project.service;
 
 import com.example.final_project.models.Notification;
 import com.example.final_project.repository.NotificationRepository;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
 public class NotificationService {
+
     private final NotificationRepository notificationRepository;
 
     public NotificationService(NotificationRepository notificationRepository) {
